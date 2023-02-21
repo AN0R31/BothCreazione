@@ -1,0 +1,40 @@
+version: '3'
+services:
+    web:
+        image: nginx:latest
+        ports:
+            - "8080:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./app:/app
+    php:
+        build:
+          context: .
+          dockerfile: PHP.Dockerfile
+        extra_hosts:
+          - host.docker.internal:host-gateway
+        volumes:
+            - ./app:/app
+    mysql:
+        image: mariadb:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: 'secret'
+            MYSQL_USER: 'root'
+            MYSQL_PASSWORD: 'secret'
+            MYSQL_DATABASE: 'both_creazione'
+        volumes:
+            - mysqldata:/var/lib/mysql
+        ports:
+            - 33066:3306
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+          - 8081:80
+        environment:
+          - PMA_HOST=mysql
+          - PMA_PORT=3306
+          - PMA_USER=root
+          - PMA_PASSWORD=secret
+volumes:
+    mysqldata: {}
