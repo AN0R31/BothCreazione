@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/user/edit.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/panel.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+          integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+{% endblock %}
+
+{% block body %}
+    {% include './general/menu.html.twig' %}
+
+    <script>
+        function send() {
+            document.getElementById('send').click()
+        }
+    </script>
+
+    <div class="container">
+        <form action="" method="POST" class="m-auto" style="max-width:600px" enctype="multipart/form-data">
+            <h3 class="my-4">{{ user.lastName == null ? 'Adauga Datele Contului' : 'Modifica Datele Contului' }}</h3>
+            {% if enableSkip is defined %}
+                <a href="{{ path('store', {}, relative = false) }}">Mai tarziu</a>
+            {% endif %}
+            <hr class="my-4"/>
+            <h4 class="my-4">Informatii Personale</h4>
+            <div class="form-group mb-3 row"><label for="lastName" class="col-md-5 col-form-label">Nume</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="lastName" name="lastName" required
+                           value="{{ user.lastName == null ? '' : user.lastName }}">
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row"><label for="firstName" class="col-md-5 col-form-label">Prenume</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="firstName" name="firstName" required
+                           value="{{ user.firstName == null ? '' : user.firstName }}">
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row">
+                <label for="profileImage" class="col-md-5 col-form-label">Schimba Imaginea de profil</label>
+                <div class="col-md-7">
+                    <input type="file" accept="image/png, image/jpg, image/jpeg" name="profileImage" id="profileImage">
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row">
+                <label for="backgroundImage" class="col-md-5 col-form-label">Schimba fundalul</label>
+                <div class="col-md-7">
+                    <input type="file" accept="image/png, image/jpg, image/jpeg" name="backgroundImage" id="backgroundImage">
+                </div>
+            </div>
+
+            <hr class="my-4"/>
+            <h4 class="my-4">Livrare si facturare</h4>
+            <div class="form-group mb-3 row"><label for="country" class="col-md-5 col-form-label">Tara</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="country" name="country" required
+                           value="{{ user.country }}" readonly>
+                    <small class="form-text text-muted">Momentan livram doar in Romania</small>
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row"><label for="county" class="col-md-5 col-form-label">Judet</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="county" name="county" required
+                           value="{{ user.county == null ? '' : user.county }}">
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row"><label for="city" class="col-md-5 col-form-label">Localitate</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="city" name="city" required
+                           value="{{ user.city == null ? '' : user.city }}">
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row"><label for="address" class="col-md-5 col-form-label">Adresa</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="address" name="address" required
+                           value="{{ user.address == null ? '' : user.address }}">
+                    <small class="form-text text-muted">Strada, Numar, Scara, Bloc, Etaj, Apartament</small>
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row"><label for="zipCode" class="col-md-5 col-form-label">Cod Postal</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="zipCode" name="zipCode" required
+                           value="{{ user.zipCode == null ? '' : user.zipCode }}">
+                </div>
+            </div>
+
+            <div class="form-group mb-3 row"><label for="phoneNumber" class="col-md-5 col-form-label">Telefon</label>
+                <div class="col-md-7">
+                    <input type="text" class="form-control form-control-lg" id="phoneNumber" name="phoneNumber" required
+                           value="{{ user.phoneNumber == null ? '' : user.phoneNumber }}">
+                </div>
+            </div>
+
+            <hr class="my-4"/>
+            <div class="form-group mb-3 row"><label for="creeaza5" class="col-md-5 col-form-label"></label>
+                <div class="col-md-7">
+                    <div class="button-black" onclick="send()">Salveaza!</div>
+                </div>
+            </div>
+            <input type="text" value="{{ source == null ? 'PROFILE' : source }}" name="source" style="display: none">
+            <button type="submit" id="send" style="display: none"></button>
+        </form>
+    </div>
+{% endblock %}

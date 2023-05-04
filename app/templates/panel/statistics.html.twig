@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/panel.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+
+{% block body %}
+    {% include './general/menu.html.twig' %}
+
+    <div>
+        <div>Statistica Totala</div>
+        <div>{{ orders|length }} Comenzi, dintre care {{ completedOrders|length }} finalizate</div>
+        <div>{{ reviews|length }} Evaluari, cu media de {{ reviewAverage }} stele</div>
+        <div>{{ users|length }} Utilizatori, dintre care {{ activeUsers|length }} activi</div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Store | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/home/store.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    {% set index = 1 %}
+    {% for product in products %}
+        {% if index == 1 %}
+            <div class="row">
+        {% endif %}
+        <div class="product">
+            <img class="product-image" src="assets/images/collection{{ product.images[0] }}"
+                 onclick="window.location.href='{{ path('product', {'product_id': product.id}, relative = false) }}'">
+
+            <div class="product-name">
+                {{ product.type }} {{ product.name }}
+            </div>
+
+            <div class="product-price">
+                {{ product.price|number_format(2) }} RON
+            </div>
+        </div>
+        {% if index == 3 %}
+            {% set index = 1 %}
+            </div>
+        {% else %}
+            {% set index = index+1 %}
+        {% endif %}
+    {% endfor %}
+    {% if index != 1 %}
+        </div>
+    {% endif %}
+{% endblock %}

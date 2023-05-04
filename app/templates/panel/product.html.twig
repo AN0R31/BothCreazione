@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panel | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/panel.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/libraries/Coloris-main/src/coloris.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+          integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/libraries/Coloris-main/src/coloris.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    <script>
+        function send() {
+            document.getElementById('send').click()
+        }
+    </script>
+
+    <div class="container">
+        <form action="" method="POST" class="m-auto" style="max-width:600px" enctype="multipart/form-data">
+            <h3 class="my-4">Adauga un produs!</h3>
+            <hr class="my-4"/>
+            <div class="form-group mb-3 row"><label for="tip2" class="col-md-5 col-form-label">Tip</label>
+                <div class="col-md-7"><input type="text" class="form-control form-control-lg" id="tip2" name="type"
+                                             value="{{ product is defined ? product.type : '' }}" required><small
+                            class="form-text text-muted"> Rochia sau Fusta</small>
+                </div>
+            </div>
+            <div class="form-group mb-3 row"><label for="nume4" class="col-md-5 col-form-label">Nume</label>
+                <div class="col-md-7"><input type="text" class="form-control form-control-lg" id="nume4" name="name"
+                                             value="{{ product is defined ? product.name : '' }}" required></div>
+            </div>
+            <div class="form-group mb-3 row"><label for="pret5" class="col-md-5 col-form-label">Pret</label>
+                <div class="col-md-7"><input type="text" class="form-control form-control-lg" id="pret5" name="price"
+                                             value="{{ product is defined ? product.price : '' }}" required></div>
+            </div>
+            <div class="form-group mb-3 row"><label for="descriere6" class="col-md-5 col-form-label">Descriere</label>
+                <div class="col-md-7"><textarea class="form-control form-control-lg" id="descriere6"
+                                                name="description"
+                                                required>{{ product is defined ? product.description : '' }}</textarea>
+                </div>
+            </div>
+            <div class="form-group mb-3 row"><label for="material7" class="col-md-5 col-form-label">Material</label>
+                <div class="col-md-7"><textarea class="form-control form-control-lg" id="material7"
+                                                name="material"
+                                                required>{{ product is defined ? product.material : '' }}</textarea>
+                </div>
+            </div>
+            <div class="form-group mb-3 row"><label for="marimi8" class="col-md-5 col-form-label">Marimi</label>
+                <div class="col-md-7">
+                    <div class="form-check custom-control custom-checkbox"><input
+                                class="form-check-input custom-control-input" type="checkbox" name="XS"
+                                id="marimi8_2"
+                                value="XS" {{ product is defined and 'XS' in product.sizes ? 'checked' : '' }}><label
+                                class="form-check-label custom-control-label"
+                                for="marimi8_2">XS</label></div>
+                    <div class="form-check custom-control custom-checkbox"><input
+                                class="form-check-input custom-control-input" type="checkbox" name="S"
+                                id="marimi8_3"
+                                value="S" {{ product is defined and 'S' in product.sizes ? 'checked' : '' }}><label
+                                class="form-check-label custom-control-label"
+                                for="marimi8_3">S</label></div>
+                    <div class="form-check custom-control custom-checkbox"><input
+                                class="form-check-input custom-control-input" type="checkbox" name="M"
+                                id="marimi8_4"
+                                value="M" {{ product is defined and 'M' in product.sizes ? 'checked' : '' }}><label
+                                class="form-check-label custom-control-label"
+                                for="marimi8_4">M</label></div>
+                    <div class="form-check custom-control custom-checkbox"><input
+                                class="form-check-input custom-control-input" type="checkbox" name="L"
+                                id="marimi8_5"
+                                value="L" {{ product is defined and 'L' in product.sizes ? 'checked' : '' }}><label
+                                class="form-check-label custom-control-label"
+                                for="marimi8_5">L</label></div>
+                    <div class="form-check custom-control custom-checkbox"><input
+                                class="form-check-input custom-control-input" type="checkbox" name="XL"
+                                id="marimi8_6"
+                                value="XL" {{ product is defined and 'XL' in product.sizes ? 'checked' : '' }}><label
+                                class="form-check-label custom-control-label"
+                                for="marimi8_6">XL</label></div>
+                </div>
+            </div>
+            <div class="form-group mb-3 row"><label for="alege-o-coletie9" class="col-md-5 col-form-label">Alege o
+                    coletie</label>
+                <div class="col-md-7"><select class="form-select custom-select custom-select-lg" id="alege-o-coletie9"
+                                              name="collection">
+                        {% for collection in collections %}
+                            <option value="{{ collection.id }}" {{ product is defined and collection == product.collection ? 'selected' : '' }}>{{ collection.name }}</option>
+                        {% endfor %}
+                    </select></div>
+            </div>
+
+            {% if product is not defined %}
+                <div class="form-group mb-3 row"><label for="creeaza9" class="col-md-5 col-form-label">Adauga
+                        Imagini</label>
+                    <div class="col-md-7">
+                        <input type="file" accept="image/png, image/jpg, image/jpeg" name="images[]" multiple>
+                    </div>
+                </div>
+            {% endif %}
+
+
+            <div class="form-group mb-3 row"><label for="creeaza10" class="col-md-5 col-form-label">Adauga
+                    Culori</label>
+                <div class="col-md-7">
+                    <div class="color-section">
+                        {% if product is not defined %}
+                            <div id="color-section">
+                                <input type="text" name="colors[0]" data-coloris>
+                            </div>
+                        {% else %}
+                            <div id="color-section">
+                            {% for color in product.colors %}
+                                <input type="text" name="colors[{{ loop.index-1 }}]" data-coloris value="{{ color }}">
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="add" id="add">+</div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4"/>
+            <div class="form-group mb-3 row"><label for="creeaza5" class="col-md-5 col-form-label"></label>
+                <div class="col-md-7">
+                    {% if product is not defined %}
+                        <div class="button-black" onclick="send()">Adauga!</div>
+                    {% else %}
+                        <div class="button-black" onclick="send()">Modifica!</div>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" id="send" style="display: none"></button>
+        </form>
+    </div>
+
+    <script>
+        let noColors = 0
+        Coloris({
+            theme: 'polaroid',
+            themeMode: 'light', // light, dark, auto
+        });
+        document.getElementById('add').addEventListener("click", ev => {
+            noColors++
+
+            let newDiv = document.createElement('div')
+            newDiv.classList.add('clr-field')
+
+            let newButton = document.createElement('button')
+            newButton.setAttribute('type', 'button')
+            newButton.setAttribute('aria-labelledby', 'clr-open-label')
+
+            let colorPicker = document.createElement('input')
+            colorPicker.setAttribute('type', 'text')
+            colorPicker.setAttribute('name', 'colors[' + noColors + ']')
+            colorPicker.setAttribute('data-coloris', '')
+
+            newDiv.appendChild(newButton)
+            newDiv.appendChild(colorPicker)
+
+            document.getElementById('color-section').appendChild(newDiv)
+        })
+    </script>
+{% endblock %}

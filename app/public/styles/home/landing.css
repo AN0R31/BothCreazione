@@ -1,0 +1,108 @@
+body {
+    overflow: hidden;
+}
+
+.background {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    opacity: 0.65;
+    z-index: -1;
+}
+
+.banner-image {
+    width: 50%;
+}
+
+.container-pics {
+    display: flex;
+    width: 100vw;
+}
+
+.panel {
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 65vh;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    flex: 0.5;
+    margin: 10px;
+    position: relative;
+    transition: flex 1s ease-in;
+
+    display: flex;
+    justify-content: center;
+    filter: drop-shadow(20px 10px 10px #707070);
+}
+
+.panel h3 {
+    font-size: 1rem;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    opacity: 0;
+}
+
+.panel.active_pic {
+    flex: 5;
+    border-radius: 50px;
+}
+
+.panel.active_pic h3 {
+    opacity: 1;
+    transition: opacity 0.3s ease-in 0.4s;
+}
+
+.button-container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    margin-top: 1%;
+}
+
+.cta {
+    position: relative;
+    display: inline-block;
+    margin-top: 15px;
+    width: 130px;
+    height: 55px;
+    font-size: 14px;
+    line-height: 55px;
+    text-align: center;
+    text-transform: uppercase;
+    color: #000;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.cta svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.cta svg rect {
+    stroke: #000;
+    stroke-width: 3;
+    stroke-dasharray: 322, 0;
+    stroke-dashoffset: 0;
+    transition: all 350ms ease-out;
+}
+
+.cta:hover {
+    color: #000000;
+}
+
+.cta:hover svg rect {
+    stroke: #000000;
+    stroke-width: 5;
+    stroke-dasharray: 110, 312;
+    stroke-dashoffset: 227;
+}
+
+.cta:active {
+    font-weight: 600;
+}

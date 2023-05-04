@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panel | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/panel.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+    <div class="row">
+        <div class="panel-2 button" onclick="window.location.href='{{ path('orders', {}, relative = false) }}'">Comenzi</div>
+        <div class="panel-2 button" onclick="window.location.href='{{ path('statistics', {}, relative = false) }}'">Statistica</div>
+    </div>
+
+    <div class="row">
+        <div class="panel-3 button" onclick="window.location.href='{{ path('app_panel_collection_create', {}, relative = false) }}'">Creeaza o colectie</div>
+        <div class="panel-3 button" onclick="editCollection()">Modifica o colectie</div>
+        <div class="panel-3 button" onclick="removeCollection()">Sterge o colectie</div>
+    </div>
+
+    <div class="row">
+        <div class="panel-3 button" onclick="window.location.href='{{ path('app_panel_product_create', {}, relative = false) }}'">Adauga un produs</div>
+        <div class="panel-3 button" onclick="editProduct()">Modifica un produs</div>
+        <div class="panel-3 button" onclick="removeProduct()">Sterge un produs</div>
+    </div>
+
+    <script>
+        function editCollection() {
+            Swal.fire({
+                title: 'Alege o colectie:',
+                html:{% for collection in collections %}
+                    `<input type="radio" id="{{ loop.index }}" value="{{ collection.id }}" name="option"><label for="{{ loop.index }}">{{ collection.name }}<br>`
+            {% if loop.index != collections|length %}
+                +
+                    {% endif %}
+                {% endfor %},
+                confirmButtonText: 'Modifica!',
+                confirmButtonColor: 'black',
+                font: 'Montserrat, sans-serif;',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    window.location.href = '/panel/collection/edit/'+document.querySelector('input[name="option"]:checked').value
+                }
+            })
+        }
+
+        function removeCollection() {
+            Swal.fire({
+                title: 'Alege o colectie:',
+                html:{% for collection in collections %}
+                    `<input type="radio" id="{{ loop.index }}" value="{{ collection.id }}" name="option"><label for="{{ loop.index }}">{{ collection.name }}<br>`
+                        {% if loop.index != collections|length %}
+                    +
+                {% endif %}
+                {% endfor %},
+                confirmButtonText: 'Sterge!',
+                confirmButtonColor: 'black',
+                font: 'Montserrat, sans-serif;',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    const id = document.querySelector('input[name="option"]:checked').value
+                    Swal.fire({
+                        title: 'Esti sigur ca vrei sa stergi aceasta colectie?',
+                        confirmButtonText: 'Da!',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            axios.post(
+                                '/panel/collection/remove/'+id
+                            ).then(function (response) {
+                                if (response.data.status === true) {
+                                    Swal.fire({
+                                        title: 'Colectia a fost stearsa!',
+                                        confirmButtonText: 'Ok!',
+                                        confirmButtonColor: 'black',
+                                        focusConfirm: false,
+                                    }).then(response => {
+                                        window.location.href = '{{ path('app_panel', {}, relative = false) }}'
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+
+        function editProduct() {
+            Swal.fire({
+                title: 'Alege un produs:',
+                html:{% for product in products %}
+                    `<input type="radio" id="{{ loop.index }}" value="{{ product.id }}" name="editProduct"><label for="{{ loop.index }}">{{ product.type }} {{ product.name }}<br>`
+                        {% if loop.index != products|length %}
+                    +
+                {% endif %}
+                {% endfor %},
+                confirmButtonText: 'Modifica!',
+                confirmButtonColor: 'black',
+                font: 'Montserrat, sans-serif;',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    window.location.href = '/panel/product/edit/'+document.querySelector('input[name="editProduct"]:checked').value
+                }
+            })
+        }
+
+        function removeProduct() {
+            Swal.fire({
+                title: 'Alege un produs:',
+                html:{% for product in products %}
+                    `<input type="radio" id="{{ loop.index }}" value="{{ product.id }}" name="removeProduct"><label for="{{ loop.index }}">{{ product.type }} {{ product.name }}<br>`
+                        {% if loop.index != products|length %}
+                    +
+                {% endif %}
+                {% endfor %},
+                confirmButtonText: 'Sterge!',
+                confirmButtonColor: 'black',
+                font: 'Montserrat, sans-serif;',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    const id = document.querySelector('input[name="removeProduct"]:checked').value
+                    Swal.fire({
+                        title: 'Esti sigur ca vrei sa stergi acest produs?',
+                        confirmButtonText: 'Da!',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            axios.post(
+                                '/panel/product/remove/'+id
+                            ).then(function (response) {
+                                if (response.data.status === true) {
+                                    Swal.fire({
+                                        title: 'Produsul a fost sters!',
+                                        confirmButtonText: 'Ok!',
+                                        confirmButtonColor: 'black',
+                                        focusConfirm: false,
+                                    }).then(response => {
+                                        window.location.href = '{{ path('app_panel', {}, relative = false) }}'
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    </script>
+{% endblock %}

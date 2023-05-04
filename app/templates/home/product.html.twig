@@ -1,0 +1,344 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.type }} {{ product.name }} | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/home/product.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('javascripts/home/product.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    <script>
+        let hasAccessory = false
+        {% if product.accessory != null %}
+        hasAccessory = true
+        {% endif %}
+    </script>
+
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    <div class="product-container">
+
+        <div class="product-pictures">
+            <div class="container_pics">
+                {% for image in product.images %}
+                    {% if loop.index == 1 %}
+                        <div class="panel active_pic"
+                             style="background-image: url('{{ asset('assets/images/collection' ~ image) }}')">
+                        </div>
+                    {% else %}
+                        <div class="panel"
+                             style="background-image: url('{{ asset('assets/images/collection' ~ image) }}')">
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="product-info">
+            <div>
+                <div class="product-title">
+                    {{ product.type }} {{ product.name|upper }}
+                </div>
+                <div class="product-price">
+                    {{ product.price|number_format(2) }} RON
+                </div>
+                {% if product.accessory != null %}
+                    <div class="product-price">
+                        {{ (product.accessory.price+product.price)|number_format(2) }} RON
+                        inclus {{ product.accessory.name }}
+                    </div>
+                {% endif %}
+                <div class="product-collection">
+                    {{ product.collection.name }}
+                </div>
+
+                <div class="rating" onclick="seeReviews()">
+                    {% if rating != 'null' or rating == 0 %}
+                        <div class="stars">
+                            {% if rating != 0 %}
+                                {% for i in 1..rating %}
+                                    <img class="star" src="{{ asset('assets/images/home/blackStar.png') }}">
+                                {% endfor %}
+                            {% endif %}
+                            {% if rating != 5 and rating != 0 %}
+                                {% for i in rating+1..5 %}
+                                    <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}">
+                                {% endfor %}
+                            {% endif %}
+                            {% if rating == 0 %}
+                                {% for i in 1..5 %}
+                                    <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}">
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="product-description">
+                {{ product.description }}
+            </div>
+
+            <div class="product-material">
+                Produsul este manufacturat din {{ product.material }}
+            </div>
+
+            {% if app.user != null %}
+                <div class="button-black" style="width: 20%; margin-top: 0" onclick="review()">Adauga un review</div>
+            {% endif %}
+
+            <form style="width: 100%" action="" method="POST">
+                <div class="bottom-container">
+                    <div class="left">
+                        <div class="custom-radios">
+                            {% for color in product.colors %}
+                                <div class="radio-input">
+                                    <input type="radio" name="color" value="{{ color }}"
+                                           id="color{{ loop.index }}" {{ loop.index == 1 ? 'checked' }}>
+                                    <label for="color{{ loop.index }}">
+                                    <span style="background-color: {{ color }}">
+                                      <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg"
+                                           alt="Checked Icon"/>
+                                    </span>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if isFavourite == true %}
+                            <div class="button-black" id="save" onclick="handleFavouritesRemoveRequest()">Salvat</div>
+                        {% else %}
+                            <div class="button-white" id="save" onclick="handleFavouritesAddRequest()">Salveaza</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="right">
+                        <div class="selection-group">
+                            {% for size in product.sizes %}
+                                <input id="size{{ loop.index }}" type="radio" name="size"
+                                       value="{{ size }}" {{ loop.index == 1 ? 'checked' }}>
+                                <label for="size{{ loop.index }}">
+                                    <img class="size-img"
+                                         src="https://i.pinimg.com/originals/ac/51/ef/ac51ef08735d2632d7e5b082fde78e83.png">
+                                    <div class="size-text">{{ size }}</div>
+                                </label>
+                            {% endfor %}
+                            <div class="info"
+                                 onclick="openTable()">?
+                            </div>
+                        </div>
+                        <div class="button-black" id="cart" onclick="handleCartRequest()">Adauga in cos</div>
+                    </div>
+                </div>
+                <input type="number" id="hasAccessory" name="hasAccessory" style="display: none">
+                <button type="submit" id="submit" style="display: none"></button>
+            </form>
+            <script>
+                function handleCartRequest() {
+                    {% if app.user == null %}
+                    Swal.fire({
+                        title: 'Intra in cont pentru a adauga produse in cos!',
+                        confirmButtonText: 'Autentificare',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            window.location.href = '{{ path('app_login', {}, relative = false) }}'
+                        }
+                    })
+                    {% else %}
+                    if (hasAccessory) {
+                        {% if product.accessory != null %}
+                        Swal.fire({
+                            title: 'Alege o optiune:',
+                            html: `<br><input type="radio" id="option1" value="0" name="option">` +
+                                `<label for="option1">` + '{{ product.type }} {{ product.name }} - {{ product.price|number_format(2) }} RON' + `</label>` +
+                                `<br><input type="radio" id="option2" value="1" name="option" checked>` +
+                                `<label for="option2">` + '{{ product.type }} {{ product.name }} + {{ product.accessory.name }} - {{ product.price+product.accessory.price|number_format(2) }} RON' + `</label>`,
+                            confirmButtonText: 'Adauga in cos',
+                            confirmButtonColor: 'black',
+                            font: 'Montserrat, sans-serif;',
+                            focusConfirm: false,
+                        }).then(response => {
+                            if (response.isConfirmed) {
+                                //VALIDATION
+                                const dataToSend = new FormData()
+                                dataToSend.set('hasAccessory', document.querySelector('input[name="option"]:checked').value)
+                                dataToSend.set('color', document.querySelector('input[name="color"]:checked').value)
+                                dataToSend.set('size', document.querySelector('input[name="size"]:checked').value)
+                                axios.post(
+                                    '{{ path('product_add_to_cart', {'product_id':  product.id}, relative = false) }}', dataToSend
+                                ).then(function (response) {
+                                    if (response.data.status === true) {
+                                        Swal.fire({
+                                            title: 'Produsul a fost adaugat in cos!',
+                                            confirmButtonText: 'Ok!',
+                                            confirmButtonColor: 'black',
+                                            focusConfirm: false,
+                                        })
+                                    }
+                                });
+                            }
+                        })
+                        {% endif %}
+                    } else {
+                        const dataToSend = new FormData()
+                        dataToSend.set('hasAccessory', 0)
+                        dataToSend.set('color', document.querySelector('input[name="color"]:checked').value)
+                        dataToSend.set('size', document.querySelector('input[name="size"]:checked').value)
+                        axios.post(
+                            '{{ path('product_add_to_cart', {'product_id':  product.id}, relative = false) }}', dataToSend
+                        ).then(function (response) {
+                            if (response.data.status === true) {
+                                Swal.fire({
+                                    title: 'Produsul a fost adaugat in cos!',
+                                    confirmButtonText: 'Ok!',
+                                    confirmButtonColor: 'black',
+                                    focusConfirm: false,
+                                })
+                            }
+                        });
+                    }
+                    {% endif %}
+                }
+
+                function handleFavouritesAddRequest() {
+                    {% if app.user == null %}
+                    Swal.fire({
+                        title: 'Intra in cont pentru a salva produse!',
+                        confirmButtonText: 'Autentificare',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            window.location.href = '{{ path('app_login', {}, relative = false) }}'
+                        }
+                    })
+                    {% else %}
+                    axios.post(
+                        '{{ path('favourites_add', {'product_id':  product.id}, relative = false) }}'
+                    ).then(function (response) {
+                        if (response.data.status === true) {
+                            Swal.fire({
+                                title: 'Produsul a fost salvat la favorite!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            })
+                            document.getElementById('save').classList.remove('button-white')
+                            document.getElementById('save').classList.add('button-black')
+                            document.getElementById('save').innerText = 'Salvat'
+                            document.getElementById('save').setAttribute('onclick', 'handleFavouritesRemoveRequest()')
+                        }
+                    });
+                    {% endif %}
+                }
+
+                function handleFavouritesRemoveRequest() {
+                    axios.post(
+                        '{{ path('favourites_remove', {'product_id':  product.id}, relative = false) }}'
+                    ).then(function (response) {
+                        if (response.data.status === true) {
+                            Swal.fire({
+                                title: 'Produsul a fost sters din favorite!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            })
+                            document.getElementById('save').classList.remove('button-black')
+                            document.getElementById('save').classList.add('button-white')
+                            document.getElementById('save').innerText = 'Salveaza'
+                            document.getElementById('save').setAttribute('onclick', 'handleFavouritesAddRequest()')
+                        }
+                    });
+                }
+
+                function openTable() {
+                    Swal.fire({
+                        title: 'Ghid de marimi',
+                        html: `{% include './general/table.html.twig' %}`,
+                        confirmButtonText: 'Adauga in cos',
+                        showConfirmButton: false,
+                        width: '75%',
+                        font: 'Montserrat, sans-serif;',
+                        focusConfirm: false,
+                    })
+                }
+
+                function review() {
+                    Swal.fire({
+                        title: 'Cum ti s-a parut produsul?',
+                        html: `{% include './general/stars.html.twig' %}`,
+                        confirmButtonText: 'Evalueaza!',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            let rating = document.getElementById('rating').getAttribute('data-value')
+                            const dataToSend = new FormData()
+                            dataToSend.set('rating', rating)
+                            dataToSend.set('title', document.getElementById('reviewTitle').value)
+                            dataToSend.set('description', document.getElementById('reviewDescription').value)
+                            axios.post(
+                                '{{ path('review', {'product_id':  product.id}, relative = false) }}', dataToSend
+                            ).then(function (response) {
+                                if (response.data.status === true) {
+                                    Swal.fire({
+                                        title: 'Evaluarea a fost adaugata!',
+                                        confirmButtonText: 'Ok!',
+                                        confirmButtonColor: 'black',
+                                        focusConfirm: false,
+                                    }).then(response => {
+                                        window.location.reload()
+                                    })
+                                } else {
+                                    Swal.fire({
+                                        title: response.data.error,
+                                        confirmButtonText: 'Ok!',
+                                        confirmButtonColor: 'black',
+                                        focusConfirm: false,
+                                    })
+                                }
+                            });
+                        }
+                    })
+                }
+
+                function press(until) {
+                    let rating = 0;
+                    for (let i = 1; i <= until; i++) {
+                        document.getElementById(String(i)).setAttribute('src', '{{ asset('assets/images/home/blackStar.png') }}')
+                        rating++;
+                    }
+
+                    for (let i = until + 1; i <= 5; i++) {
+                        document.getElementById(String(i)).setAttribute('src', '{{ asset('assets/images/home/whiteStar.png') }}')
+                    }
+
+                    document.getElementById('rating').setAttribute('data-value', String(rating))
+                }
+
+                function seeReviews() {
+                    Swal.fire({
+                        title: 'Evaluari',
+                        html: `{% include './general/reviews.html.twig' %}`,
+                        confirmButtonText: 'Adauga in cos',
+                        showConfirmButton: false,
+                        width: '75%',
+                        font: 'Montserrat, sans-serif;',
+                        focusConfirm: false,
+                    })
+                }
+            </script>
+        </div>
+
+    </div>
+
+{% endblock %}

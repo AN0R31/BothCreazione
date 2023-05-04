@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/home/landing.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/general/menu.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <img class="background" src="{{ asset('assets/images/home/background.gif') }}">
+
+    <nav role="navigation">
+        <div id="menuToggle">
+            <!--
+            A fake / hidden checkbox is used as click reciever,
+            so you can use the :checked selector on it.
+            -->
+            <input type="checkbox"/>
+
+            <!--
+            Some spans to act as a hamburger.
+
+            They are acting like a real hamburger,
+            not that McDonalds stuff.
+            -->
+            <span></span>
+            <span></span>
+            <span></span>
+
+            <!--
+            Too bad the menu has to be inside of the button
+            but hey, it's pure CSS magic.
+            -->
+            <ul id="menu">
+                <a href="#">
+                    <li>Home</li>
+                </a>
+                <a href="#">
+                    <li>About</li>
+                </a>
+                <a href="#">
+                    <li>Info</li>
+                </a>
+                <a href="#">
+                    <li>Contact</li>
+                </a>
+                <a href="https://erikterwan.com/" target="_blank">
+                    <li>Show me more</li>
+                </a>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="logo-container">
+        <img class="logo" src="assets/images/home/logoSmall.png" onclick="window.location.href='{{ path('store', {}, relative = false) }}'">
+    </div>
+
+    <div class="container-pics">
+        <div class="panel" style="background-image: url('{{ asset('assets/images/home/banner2.jpg') }}')">
+        </div>
+        <div class="panel" style="background-image: url('{{ asset('assets/images/home/banner1.jpg') }}')" id="toClick">
+        </div>
+        <div class="panel" style="background-image: url('{{ asset('assets/images/home/banner3.jpg') }}')">
+        </div>
+    </div>
+
+    <div class="button-container" onclick="window.location.href='{{ path('store', {}, relative = false) }}'">
+        <a class="cta">
+            <svg>
+                <rect x="0" y="0" fill="none" width="130" height="55"/>
+            </svg>
+            Explore
+        </a>
+    </div>
+
+    <script>
+        const panels = document.querySelectorAll('.panel');
+
+        function removeActiveClasses() {
+            for (let panel of panels) {
+                panel.classList.remove('active_pic');
+            }
+        }
+
+        for (let panel of panels) {
+            panel.addEventListener('click', () => {
+                removeActiveClasses();
+                panel.classList.add('active_pic');
+            })
+        }
+
+        const sleep = async (milliseconds) => {
+            await new Promise(resolve => {
+                return setTimeout(resolve, milliseconds)
+            });
+        };
+
+        const start = async () => {
+            await sleep(2000);
+            document.getElementById('toClick').click()
+        }
+
+        start()
+    </script>
+{% endblock %}

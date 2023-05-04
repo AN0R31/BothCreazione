@@ -1,0 +1,85 @@
+body {
+    overflow-x: hidden;
+}
+
+.row {
+    width: 90%;
+    height: fit-content;
+    margin: 25px auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.panel-2 {
+    width: 47.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 0;
+    text-transform: uppercase;
+    font-size: 40px;
+    font-weight: normal;
+}
+
+.panel-3 {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 0;
+    text-transform: uppercase;
+    font-size: 40px;
+    font-weight: normal;
+}
+
+.button {
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+    transition: background-color;
+    transition-duration: 0.3s;
+}
+
+.button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+}
+
+.button-black {
+    margin-top: 5%;
+    padding: 10px 0;
+    width: 40%;
+    height: fit-content;
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    transition: background-color;
+    transition-duration: 0.3s;
+}
+
+.button-black:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+}
+
+.add {
+    color: green;
+    font-size: 20px;
+    text-transform: uppercase;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    margin-left: 25px;
+}
+
+.add:hover {
+    cursor: pointer;
+}
+
+.color-section {
+    width: 100%;
+    display: flex;
+}

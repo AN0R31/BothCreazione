@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% for review in reviews %}
+        <div class="review" style="margin-bottom: 20px">
+            <div style="font-size: 30px">{{ review.title }}</div>
+            <div style="font-size: 20px">{{ review.description }}</div>
+            {% for i in 1..5 %}
+                {% if review.grade >= i %}
+                    <img class="star" src="{{ asset('assets/images/home/blackStar.png') }}">
+                {% else %}
+                    <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}">
+                {% endif %}
+            {% endfor %}
+            <div style="font-size: 25px; margin-top: 5px">Evaluat de: <b style="cursor: pointer;"
+                                                                         onclick="window.location.href='{{ path('user', {'user_id': review.user.id}, relative = false) }}'">{{ review.user.lastName == null ? '' : review.user.lastName }} {{ review.user.firstName == null ? 'User' : review.user.firstName }}</b>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

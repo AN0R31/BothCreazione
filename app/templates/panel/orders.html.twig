@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/panel.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/general/table.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/orders.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    <div class="container" style="max-width: 98% !important;">
+        <div class="table">
+            <div class="table-header">
+                <div class="header__item"><a class="filter__link">Numar</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Client</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Adresa</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Contact</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Total</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Produse</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Intrata</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Trimisa</a></div>
+                <div class="header__item"><a class="filter__link filter__link--number">Primita</a></div>
+            </div>
+            <div class="table-content">
+                {% for order in orders %}
+                    <div class="table-row">
+                        <div class="table-data">{{ order.id }}</div>
+                        <div class="table-data">{{ order.country }}, {{ order.county }}, {{ order.city }}
+                            , {{ order.address }}, {{ order.zipCode }}</div>
+                        <div class="table-data">{{ order.user.lastName }} {{ order.user.firstName }}</div>
+                        <div class="table-data">{{ order.phoneNumber }}, {{ order.user.email }}</div>
+                        <div class="table-data">{{ order.price }} RON</div>
+                        <div class="table-data">
+                            {% for product in order.products %}
+                                <div style="display: inline-flex">
+                                    <a href="{{ path('product', {'product_id': product}, relative = false) }}">{{ products[product].type }} {{ products[product].name }}</a>
+                                    <div style="margin: 5px; width: 10px; height: 10px; background-color: {{ order.productColors[loop.index-1] }}"></div>
+                                    <div>{{ order.productSizes[loop.index-1] }}</div>
+                                </div>
+                                {% if loop.index != order.products|length %}
+                                    ,<br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        {% if order.status == 'PLACED' %}
+                            <div class="table-data" style="color: green">Comanda
+                                Inregistrata<br>{{ order.createdAt|date('d M Y') }}<br>{{ order.createdAt|date('H:i') }}
+                            </div>
+                            <div class="table-data" style="color: red">NU<br>
+                                <div style="color: black" onclick="changeStatus({{ order.id }}, 'SENT')">Trimite
+                                    comanda!
+                                </div>
+                            </div>
+                            <div class="table-data" style="color: red">NU</div>
+                        {% endif %}
+                        {% if order.status == 'SENT' %}
+                            <div class="table-data" style="color: green">Comanda
+                                Inregistrata<br>{{ order.createdAt|date('d M Y') }}<br>{{ order.createdAt|date('H:i') }}
+                            </div>
+                            <div class="table-data" style="color: green">Comanda
+                                Trimisa<br>{{ order.sentAt|date('d M Y') }}<br>{{ order.sentAt|date('H:i') }}</div>
+                            <div class="table-data" style="color: red">NU<br>
+                                <div style="color: black" onclick="changeStatus({{ order.id }}, 'COMPLETED')">
+                                    Finalizeaza comanda!
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if order.status == 'COMPLETED' %}
+                            <div class="table-data" style="color: green">Comanda
+                                Inregistrata<br>{{ order.createdAt|date('d M Y') }}<br>{{ order.createdAt|date('H:i') }}
+                            </div>
+                            <div class="table-data" style="color: green">Comanda
+                                Trimisa<br>{{ order.sentAt|date('d M Y') }}<br>{{ order.sentAt|date('H:i') }}</div>
+                            <div class="table-data" style="color: green">Comanda
+                                Finalizata<br>{{ order.completedAt|date('d M Y') }}
+                                <br>{{ order.completedAt|date('H:i') }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeStatus(orderId, status) {
+            Swal.fire({
+                title: 'Esti sigur ca vrei sa modifici statusul comenzi la ' + status + '?',
+                confirmButtonText: 'Da!',
+                confirmButtonColor: 'black',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    axios.post(
+                        '/panel/orders/updateStatus/' + orderId + '/' + status
+                    ).then(function (response) {
+                        if (response.data.status === true) {
+                            Swal.fire({
+                                title: 'Statusul a fost schimbat cu succes, clientul va fi notificat!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            }).then(response => {
+                                window.location.reload()
+                            })
+                        } else {
+                            Swal.fire({
+                                title: 'Ceva nu a functionat, mai incearca o data!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            })
+                            window.location.reload()
+                        }
+                    });
+                }
+            })
+        }
+    </script>
+
+{% endblock %}

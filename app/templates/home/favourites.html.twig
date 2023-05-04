@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Salvate | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/home/cart.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    <div class="container">
+        {% for savedItem in savedItems %}
+            <div class="item">
+                <div class="remove"
+                     onclick="remove({{ savedItem.id }}, '{{ savedItem.product.name }}', '{{ savedItem.product.type }}')">
+                    X
+                </div>
+
+                <div class="item-name">
+                    <a href="{{ path('product', {'product_id': savedItem.product.id}, relative = false) }}">{{ savedItem.product.type }} {{ savedItem.product.name }}
+                        ,</a>
+                </div>
+
+                <div class="item-price">
+                    {{ savedItem.product.price|number_format(2) }} RON
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function remove(savedItemId, productName, productType) {
+            const title = 'Esti sigur ca vrei sa elimini ' + productType + ' ' + productName + ' din lista de favorite?'
+            Swal.fire({
+                title: title,
+                confirmButtonText: 'Sterge!',
+                confirmButtonColor: 'black',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    const dataToSend = new FormData()
+                    dataToSend.set('savedItemId', savedItemId)
+                    axios.post(
+                        '{{ path('product_remove_from_favourites', {}, relative = false) }}', dataToSend
+                    ).then(function (response) {
+                        if (response.data.status === true) {
+                            Swal.fire({
+                                title: 'Produsul a fost elimininat din lista de favorite!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            }).then(response => {
+                                window.location.href = '{{ path('favourites', {}, relative = false) }}'
+                            })
+                        }
+                    });
+                }
+            })
+        }
+    </script>
+
+{% endblock %}

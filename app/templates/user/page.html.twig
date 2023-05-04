@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/user/page.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block body %}
+
+    {% include './general/menu.html.twig' %}
+
+    <div class="content-profile-page">
+        <div class="profile-user-page card">
+            <div class="img-user-profile">
+                <img class="profile-bgHome" src="{{ asset('assets/images/user/background/')~user.backgroundImage }}"/>
+                <img class="avatar" src="{{ asset('assets/images/user/profile/')~user.profileImage }}" alt="jofpin"/>
+            </div>
+            {% if user == app.user %}
+                <button onclick="window.location.href='{{ path('user_edit', {}, relative = false) }}'">Editeaza</button>
+            {% endif %}
+            <div class="user-profile-data">
+                <h1>{{ user.firstName == null ? user.email : user.firstName }} {{ user.lastName == null ? '' : user.lastName }}</h1>
+                <p>Membru din {{ user.createdAt|date('d M Y') }}</p>
+            </div>
+            <div class="description-profile">
+                {% for role in user.roles %}
+                    {{ role|trim('ROLE_', 'left') }} {{ loop.index == user.roles|length ? '' : '|' }}
+                {% endfor %}
+            </div>
+            <ul class="data-user">
+                <li><a><strong>{{ noOrders }}</strong><span>Comenzi</span></a></li>
+                <li><a><strong>{{ noReviews }}</strong><span>Evaluari</span></a></li>
+                <li><a><strong>{{ noSaved }}</strong><span>Salvate</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+{#    <footer>#}
+{#        <h4>Design by <a href="https://twitter.com/jofpin" target="_blank" title="José Pino">@jofpin</a></h4>#}
+{#    </footer>#}
+
+{% endblock %}

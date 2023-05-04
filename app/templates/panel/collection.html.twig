@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panel | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/panel/panel.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+          integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+{% endblock %}
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    <script>
+        function send() {
+            document.getElementById('send').click()
+        }
+    </script>
+
+    <div class="container">
+        <form action="" method="POST" class="m-auto" style="max-width:600px">
+            {% if collection is defined %}
+                <h3 class="my-4">Modifica colectia {{ collection.name }}!</h3>
+            {% else %}
+                <h3 class="my-4">Creeaza o noua colectie!</h3>
+            {% endif %}
+            <hr class="my-4"/>
+            <div class="form-group mb-3 row"><label for="titlu2" class="col-md-5 col-form-label">Titlu</label>
+                <div class="col-md-7">
+                    {% if collection is defined %}
+                        <input type="text" class="form-control form-control-lg" id="titlu2" name="name" required
+                               value="{{ collection.name }}">
+                    {% else %}
+                        <input type="text" class="form-control form-control-lg" id="titlu2" name="name" required>
+                    {% endif %}
+
+                    <small class="form-text text-muted"> Numele colectiei</small>
+                </div>
+            </div>
+            <hr class="my-4"/>
+            <div class="form-group mb-3 row"><label for="creeaza5" class="col-md-5 col-form-label"></label>
+                <div class="col-md-7">
+                    {% if collection is defined %}
+                        <div class="button-black" onclick="send()">Modifica!</div>
+                    {% else %}
+                        <div class="button-black" onclick="send()">Creeaza!</div>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" id="send" style="display: none"></button>
+        </form>
+    </div>
+{% endblock %}

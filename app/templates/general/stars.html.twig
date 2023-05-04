@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="stars">
+        <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}" id="1" onclick="press(1)">
+        <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}" id="2" onclick="press(2)">
+        <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}" id="3" onclick="press(3)">
+        <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}" id="4" onclick="press(4)">
+        <img class="star" src="{{ asset('assets/images/home/whiteStar.png') }}" id="5" onclick="press(5)">
+    </div>
+    <div id="rating" data-value="0"></div>
+
+    <div>
+        <div style="font-size: 20px; margin-top: 20px;">Titlu</div>
+        <input type="text" id="reviewTitle">
+    </div>
+
+    <div>
+        <div style="font-size: 20px; margin-top: 20px;">Descriere</div>
+        <textarea id="reviewDescription"></textarea>
+    </div>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cart | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/home/cart.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    {% include './general/banner.html.twig' %}
+    {% include './general/menu.html.twig' %}
+
+    <div class="container">
+        {% set total = 0 %}
+        {% for cartItem in cartItems %}
+            <div class="item">
+                <div class="remove"
+                     onclick="remove({{ cartItem.id }}, '{{ cartItem.product.name }}', '{{ cartItem.product.type }}')">X
+                </div>
+                {% if cartItem.hasAccessory == true %}
+                    <div class="item-name">
+                        <a href="{{ path('product', {'product_id': cartItem.product.id}, relative = false) }}">{{ cartItem.product.type }} {{ cartItem.product.name }}
+                            + {{ cartItem.product.accessory.name }}
+                            ,</a>
+                    </div>
+                {% else %}
+                    <div class="item-name">
+                        <a href="{{ path('product', {'product_id': cartItem.product.id}, relative = false) }}">{{ cartItem.product.type }} {{ cartItem.product.name }}
+                            ,</a>
+                    </div>
+                {% endif %}
+
+                {% if cartItem.hasAccessory == true %}
+                    {% set total = total + cartItem.product.price + cartItem.product.accessory.price %}
+                    <div class="item-price">
+                        {{ (cartItem.product.price+cartItem.product.accessory.price)|number_format(2) }} RON
+                    </div>
+                {% else %}
+                    {% set total = total + cartItem.product.price %}
+                    <div class="item-price">
+                        {{ cartItem.product.price|number_format(2) }} RON
+                    </div>
+                {% endif %}
+
+                <div class="item-size">
+                    marimea {{ cartItem.size }},
+                </div>
+
+                <div class="item-color">
+                    <div class="custom-radios">
+                        <div class="radio-input">
+                            <input type="radio" id="color{{ loop.index }}" disabled>
+                            <label for="color{{ loop.index }}">
+                                <div class="item-size" style="font-weight: normal">
+                                    culoarea
+                                </div>
+                                <span style="background-color: {{ cartItem.color }}">
+                                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg"
+                                         alt="Checked Icon"/>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="total">
+            TOTAL: {{ total|number_format(2) }} RON
+        </div>
+    </div>
+
+    <div class="button-container">
+        <div class="button-black" onclick="order()">Comanda acum!</div>
+    </div>
+
+    <script>
+        function remove(cartItemId, productName, productType) {
+            const title = 'Esti sigur ca vrei sa elimini ' + productType + ' ' + productName + ' din cos?'
+            Swal.fire({
+                title: title,
+                confirmButtonText: 'Sterge!',
+                confirmButtonColor: 'black',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    const dataToSend = new FormData()
+                    dataToSend.set('cartItemId', cartItemId)
+                    axios.post(
+                        '{{ path('product_remove_from_cart', {}, relative = false) }}', dataToSend
+                    ).then(function (response) {
+                        if (response.data.status === true) {
+                            Swal.fire({
+                                title: 'Produsul a fost elimininat din cos!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            }).then(response => {
+                                window.location.href = '{{ path('cart', {}, relative = false) }}'
+                            })
+                        }
+                    });
+                }
+            })
+        }
+
+        function order() {
+            Swal.fire({
+                title: 'Esti sigur ca vrei sa plasezi comanda?',
+                confirmButtonText: 'Da!',
+                confirmButtonColor: 'black',
+                focusConfirm: false,
+            }).then(response => {
+                if (response.isConfirmed) {
+                    {% if app.user.address == null %}
+                    Swal.fire({
+                        title: 'Lipsesc datele de livrare. Completezi Acum?',
+                        confirmButtonText: 'Da!',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            window.location.href = '{{ path('user_edit', {'source': 'ORDER'}, relative = false) }}'
+                        } else {
+                            Swal.fire({
+                                title: 'Comanda a fost anulata!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            })
+                        }
+                    })
+                    {% else %}
+                    Swal.fire({
+                        title: 'Folosim detaliile de livrare: {{ app.user.lastName }} {{ app.user.firstName }}, {{ app.user.country }}, {{ app.user.county }}, {{ app.user.city }}, {{ app.user.address }}, {{ app.user.zipCode }}, {{ app.user.phoneNumber }} ?',
+                        confirmButtonText: 'Arata bine!',
+                        confirmButtonColor: 'black',
+                        focusConfirm: false,
+                        showCancelButton: true,
+                        cancelButtonText: 'Nu, vreau sa editez!',
+                    }).then(response => {
+                        if (response.isConfirmed) {
+                            axios.post(
+                                '{{ path('order', {}, relative = false) }}'
+                            ).then(function (response) {
+                                if (response.data.status === true) {
+                                    Swal.fire({
+                                        title: 'Comanda a fost plasata cu succes! Vei fi redirectionat...',
+                                        confirmButtonText: 'Ok!',
+                                        confirmButtonColor: 'black',
+                                        focusConfirm: false,
+                                    }).then(response => {
+                                        window.location.href = '{{ path('store', {}, relative = false) }}'
+                                    })
+                                }
+                            });
+                        } else if(response.dismiss === 'cancel'){
+                            window.location.href = '{{ path('user_edit', {'source': 'ORDER'}, relative = false) }}'
+                        } else {
+                            Swal.fire({
+                                title: 'Comanda a fost anulata!',
+                                confirmButtonText: 'Ok!',
+                                confirmButtonColor: 'black',
+                                focusConfirm: false,
+                            })
+                        }
+                    })
+                    {% endif %}
+                }
+            })
+        }
+    </script>
+
+{% endblock %}

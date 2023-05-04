@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register | S. Both Creazione{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/home/auth.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+    {% include './general/menu.html.twig' %}
+
+    <h1 class="title">Bun venit!</h1>
+
+    <div class="login-page">
+        {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        {% endfor %}
+        <div class="form">
+            {{ form_start(registrationForm) }}
+            {{ form_widget(registrationForm.email) }}
+            {{ form_widget(registrationForm.plainPassword) }}
+            <div class="terms">
+                Sunt de acord cu<br><a href="#" class="link">Termenii si Conditiile</a>
+                {{ form_widget(registrationForm.agreeTerms) }}
+            </div>
+            <button type="submit">Inregistreaza-te</button>
+            <p class="message">Ai deja cont? <a href="{{ path('app_login', {}, relative = false) }}">Conecteaza-te
+                    aici!</a></p>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

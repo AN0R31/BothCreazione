@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/general/body.css') }}" rel="stylesheet">
+    <link href="{{ asset('styles/general/table.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="table">
+            <div class="table-header">
+                <div class="header__item"><a id="name" class="filter__link">Marime</a></div>
+                <div class="header__item"><a id="wins" class="filter__link filter__link--number">Bust</a></div>
+                <div class="header__item"><a id="draws" class="filter__link filter__link--number">Talie</a></div>
+                <div class="header__item"><a id="losses" class="filter__link filter__link--number">Sold</a></div>
+            </div>
+            <div class="table-content">
+                <div class="table-row">
+                    <div class="table-data">XS</div>
+                    <div class="table-data">84 - 88</div>
+                    <div class="table-data">68 - 72</div>
+                    <div class="table-data">92 - 96</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-data">S</div>
+                    <div class="table-data">88 - 92</div>
+                    <div class="table-data">72 - 76</div>
+                    <div class="table-data">96 - 100</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-data">M</div>
+                    <div class="table-data">92 - 96</div>
+                    <div class="table-data">76 - 80</div>
+                    <div class="table-data">100 - 104</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-data">L</div>
+                    <div class="table-data">96 - 100</div>
+                    <div class="table-data">80 - 84</div>
+                    <div class="table-data">104 - 108</div>
+                </div>
+                <div class="table-row">
+                    <div class="table-data">XL</div>
+                    <div class="table-data">100 - 106</div>
+                    <div class="table-data">84 - 90</div>
+                    <div class="table-data">108 - 114</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
